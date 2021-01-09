@@ -80,8 +80,8 @@ Model parameters are documented in `parameters_ref.txt`.
 
 For example:
 
-`Rscript examples/0-libraries.R`
-`Rscript v1/examples/1-getting-started.R`
+* `Rscript examples/0-libraries.R`
+* `Rscript v1/examples/1-getting-started.R`
 
 
 For Version 2:
@@ -93,5 +93,5 @@ For Version 2:
 
 For example:
 
-`Rscript examples/0-libraries.R`
-`Rscript examples/1-getting-started.R`
+* `Rscript examples/0-libraries.R`
+* `Rscript examples/1-getting-started.R`
