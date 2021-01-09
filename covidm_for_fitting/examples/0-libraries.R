@@ -1,5 +1,7 @@
 # Install needed libraries -----------------------------------------------
 
+chooseCRANmirror(graphics=FALSE, ind=1)
+
 install.packages("data.table")   # for data.table, an enhanced (and faster) data.frame
 install.packages("ggplot2")      # for plotting
 install.packages("Rcpp")         # for running the C++ model backend

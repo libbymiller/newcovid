@@ -27,7 +27,7 @@ An alternative, non-preferred workaround to step 4 if the environment variables 
 
 ## Installation for Mac OS X
 
-You will need to install gfortran binaries from here: https://github.com/fxcoudert/gfortran-for-macOS/releases
+You will need to install gfortran binaries from here: https://github.com/fxcoudert/gfortran-for-macOS/releases. 
 
 Once installed, run `gcc --version` in terminal to get your current version, e.g. `Target: x86_64-apple-darwin18.8.2.0`. Then run below in terminal to add library path for R:
 
@@ -35,18 +35,63 @@ Once installed, run `gcc --version` in terminal to get your current version, e.g
 cd ~
 mkdir .R
 cd .R
-echo FLIBS=-L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin18/8.2.0 -L/usr/local/gfortran/lib -lgfortran -lquadmath -lm >> Makevars
+nano Makevars
 ```
+content
+
+```
+LOC = /usr/local/gfortran
+CC=$(LOC)/bin/gcc -fopenmp
+CXX=$(LOC)/bin/g++ -fopenmp
+CXX11 = $(LOC)/bin/g++ -fopenmp # for fst package
+
+CFLAGS=-g -O3 -Wall -pedantic -std=gnu99 -mtune=native -pipe
+CXXFLAGS=-g -O3 -Wall -pedantic -std=c++11 -mtune=native -pipe
+LDFLAGS=-L$(LOC)/lib -Wl,-rpath,$(LOC)/lib
+CPPFLAGS=-I$(LOC)/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
+FLIBS=-L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin18/8.2.0 -L/usr/local/gfortran/lib -lgfortran -lquadmath -lm
+```
+(see https://github.com/Rdatatable/data.table/wiki/Installation#openmp-enabled-compiler-for-mac "GCC (Official GNU fortran) ver". I'm not sure if FLIBS is needed) 
+
+Some of the other R files use a lot of memory - it might help to do this:
+
+```
+nano ~/.Renviron 
+```
+contents
+```
+R_MAX_VSIZE=100Gb
+```
+(see https://stackoverflow.com/questions/51248293/error-vector-memory-exhausted-limit-reached-r-3-5-0-macos#52612848 )
 
 ## Examples
 
-These can be found in the `examples` folder. This includes the following R files:
+These can be found in the `examples` folder. This includes the following R files for version 1:
+
+* `examples/0-libraries.R` - Install required R libraries
+* `v1/examples/1-getting-started.R` - Compile code and run a basic simulation
+* `v1/examples/2-interventions.R` - Run intervention scenarios
+* `v1/examples/3-processes.R` - Set up an observation process (one way of calculating health burdens over time). 
+* `v1/examples/4-fitting.R` - Fitting model to data using MCMC. 
+* `v1/examples/5-observer.R` - Set up an observer to dynamically change parameters during a simulation. 
+
+Model parameters are documented in `parameters_ref.txt`.
+
+
+For example:
+
+`Rscript examples/0-libraries.R`
+`Rscript v1/examples/1-getting-started.R`
+
+
+For Version 2:
 
 * `examples/0-libraries.R` - Install required R libraries
 * `examples/1-getting-started.R` - Compile code and run a basic simulation
 * `examples/2-interventions.R` - Run intervention scenarios
-* `examples/3-processes.R` - Set up an observation process (one way of calculating health burdens over time). 
-* `examples/4-fitting.R` - Fitting model to data using MCMC. 
-* `examples/5-observer.R` - Set up an observer to dynamically change parameters during a simulation. 
+* `examples/3-vaccination.R` - ??
 
-Model parameters are documented in `parameters_ref.txt`.
+For example:
+
+`Rscript examples/0-libraries.R`
+`Rscript examples/1-getting-started.R`

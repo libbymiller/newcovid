@@ -1,7 +1,8 @@
 # 1-getting-started.R
 
 # covidm options
-cm_path = "~/Dropbox/nCoV/covidm/"; ### CHANGE THIS to reflect the path to covidm.
+#cm_path = "~/Dropbox/nCoV/covidm/"; ### CHANGE THIS to reflect the path to covidm.
+cm_path = "../covidm_for_fitting/";
 cm_force_rebuild = F;
 cm_build_verbose = T;
 cm_version = 1;
