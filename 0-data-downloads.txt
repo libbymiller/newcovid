@@ -1,0 +1,15 @@
+# various data need downloading.
+
+# We don't upload full Google Mobility Report files to the repo because they are 200+ MB, 
+# but if you download the "global CSV" from https://www.google.com/covid19/mobility/, that's it.
+# e.g. curl https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv > data/Global_Mobility_Report.csv
+
+# also the mapping of ward to local authoriies 
+# https://data.gov.uk/dataset/34e8b762-3165-4c13-aef5-c6463f27859b/ward-to-local-authority-district-to-county-to-region-to-country-december-2019-lookup-in-united-kingdom
+# curl -L http://geoportal1-ons.opendata.arcgis.com/datasets/cdcc46d656e84e3d997e4ab2cd77881a_0.csv > data/Ward_to_Local_Authority_District_to_County_to_Region_to_Country_December_2019_Lookup_in_United_Kingdom.csv
+
+# also https://data.gov.uk/dataset/94cf8e7a-5ade-4c47-8b6f-cae3f90b6ec9/lower-layer-super-output-area-2011-to-clinical-commissioning-group-to-local-authority-district-april-2020-lookup-in-england
+# curl -L http://geoportal1-ons.opendata.arcgis.com/datasets/f0b39d6872dd4533aaf3941846134a89_0.csv > data/Lower_Layer_Super_Output_Area_2011_to_Clinical_Commissioning_Group_to_Local_Authority_District_April_2020_Lookup_in_England.csv
+
+# also https://geoportal.statistics.gov.uk/datasets/clinical-commissioning-group-to-stp-and-nhs-england-region-april-2020-lookup-in-england/data
+# curl -L https://opendata.arcgis.com/datasets/888dc5cc66ba4ad9b4d935871dcce251_0.csv > data/Clinical_Commissioning_Group_to_STP_and_NHS_England_Region_April_2020_Lookup_in_England.csv
