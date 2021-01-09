@@ -5,7 +5,18 @@ library(data.table)
 # Google visits data
 # We don't upload full Google Mobility Report files to the repo because they are 200+ MB, 
 # but if you download the "global CSV" from https://www.google.com/covid19/mobility/, that's it.
-googmo = fread("~/Dropbox/uk_covid_data/fitting/data/Global_Mobility_Report-2021-01-05.csv");
+# e.g. curl https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv > data/Global_Mobility_Report.csv
+# also the mapping of ward to local authoriies 
+# https://data.gov.uk/dataset/34e8b762-3165-4c13-aef5-c6463f27859b/ward-to-local-authority-district-to-county-to-region-to-country-december-2019-lookup-in-united-kingdom
+# curl -L http://geoportal1-ons.opendata.arcgis.com/datasets/cdcc46d656e84e3d997e4ab2cd77881a_0.csv > data/Ward_to_Local_Authority_District_to_County_to_Region_to_Country_December_2019_Lookup_in_United_Kingdom.csv
+# also https://data.gov.uk/dataset/94cf8e7a-5ade-4c47-8b6f-cae3f90b6ec9/lower-layer-super-output-area-2011-to-clinical-commissioning-group-to-local-authority-district-april-2020-lookup-in-england
+# curl -L http://geoportal1-ons.opendata.arcgis.com/datasets/f0b39d6872dd4533aaf3941846134a89_0.csv > data/Lower_Layer_Super_Output_Area_2011_to_Clinical_Commissioning_Group_to_Local_Authority_District_April_2020_Lookup_in_England.csv
+# also https://geoportal.statistics.gov.uk/datasets/clinical-commissioning-group-to-stp-and-nhs-england-region-april-2020-lookup-in-england/data
+# curl -L https://opendata.arcgis.com/datasets/888dc5cc66ba4ad9b4d935871dcce251_0.csv > data/Clinical_Commissioning_Group_to_STP_and_NHS_England_Region_April_2020_Lookup_in_England.csv
+
+#googmo = fread("~/Dropbox/uk_covid_data/fitting/data/Global_Mobility_Report-2021-01-05.csv");
+googmo = fread("data/Global_Mobility_Report.csv");
+
 googmo = googmo[country_region_code == "GB" & sub_region_1 != "" & sub_region_2 == "" & metro_area == ""];
 
 # Melt mobility data
@@ -32,7 +43,7 @@ process_name = function(x)
 }
 
 # Create table of all GSS names relevant for us
-wards = fread("~/Dropbox/uk_covid_data/fitting/data/Ward_to_Local_Authority_District_to_County_to_Region_to_Country_December_2019_Lookup_in_United_Kingdom.csv")
+wards = fread("data/Ward_to_Local_Authority_District_to_County_to_Region_to_Country_December_2019_Lookup_in_United_Kingdom.csv")
 
 placematch = rbind(
     unique(data.table(gss_code = wards$LAD19CD, gss_name = wards$LAD19NM)),
@@ -50,6 +61,7 @@ gplacematch[, match_name := process_name(goog_name)];
 
 # Merge
 match_table = merge(placematch, gplacematch, by = "match_name", all.y = T);
+print("[a]");
 
 # Check for duplicates
 resolve_duplicates = function(match_table, goog_nm, gss_nm, gss_cd = "")
@@ -69,15 +81,17 @@ if (nrow(match_table[duplicated(goog_name)]) > 0) {
 }
 
 # Amalgamate by NHS England region / DA
-lads = fread("~/Dropbox/uk_covid_data/fitting/data/Lower_Layer_Super_Output_Area_2011_to_Clinical_Commissioning_Group_to_Local_Authority_District_April_2020_Lookup_in_England.csv");
-nhsers = fread("~/Dropbox/uk_covid_data/fitting/data/Clinical_Commissioning_Group_to_STP_and_NHS_England_Region_April_2020_Lookup_in_England.csv");
+lads = fread("data/Lower_Layer_Super_Output_Area_2011_to_Clinical_Commissioning_Group_to_Local_Authority_District_April_2020_Lookup_in_England.csv");
+nhsers = fread("data/Clinical_Commissioning_Group_to_STP_and_NHS_England_Region_April_2020_Lookup_in_England.csv");
 
 # Match LAD to CCG to NHS region
 lad_to_ccg = unique(lads[, .(gss_code = LAD20CD, CCG20CD)]);
 ccg_to_nhs = unique(nhsers[, .(CCG20CD, region_name = NHSER20NM)]);
 
 match_table = merge(match_table, lad_to_ccg, by = "gss_code", all.x = T)
+print("[b]");
 match_table = merge(match_table, ccg_to_nhs, by = "CCG20CD", all.x = T)
+print("[c]");
 
 # Fill in DAs and some regions
 match_table[gss_code %like% "^N", region_name := "Northern Ireland"]
@@ -89,11 +103,15 @@ match_table[gss_name == "Buckinghamshire", region_name := "South East"];
 # Fill in missing counties E10 and metropolitan counties E11
 ladcounty = unique(wards[, .(LAD19CD, LAD19NM, CTY19CD, CTY19NM)])
 ladcounty = merge(ladcounty, unique(lads[, .(LAD19CD = LAD20CD, CCG20CD)]), all.x = T)
+print("[d]");
 ladcounty = merge(ladcounty, unique(nhsers[, .(CCG20CD, region_name = NHSER20NM)]), by = "CCG20CD", all.x = T)
+print("[e]");
 county_to_nhs = unique(ladcounty[CTY19CD != "", .(gss_code = CTY19CD, region_name)])
 match_table = merge(match_table, unique(ladcounty[, .(gss_code = CTY19CD, region_name)]), by = "gss_code", all.x = T);
+print("[f]");
 
 # Take region name x or y
+print(match_table);
 if (nrow(match_table[!is.na(region_name.x) & !is.na(region_name.y)]) > 0) {
     stop("Match table has both region_name.x and region_name.y.");
 }
@@ -112,12 +130,14 @@ match_table[, mappings := .N, by = goog_name];
 
 # Get population info
 match_table = merge(match_table, cm_structure_UK[, .(gss_code = Code, population = `All ages`)], by = "gss_code", all.x = T);
+print("[g]");
 if (nrow(match_table[is.na(population)]) > 0) {
     stop("Missing population information.")
 }
 
 # Bring together and amalgamate by NHS region
 googen2 = merge(googmo, match_table, by.x = "sub_region_1", by.y = "goog_name", allow.cartesian = T);
+print("[h]");
 
 # Fill missing values in data sets, from median for date within region
 googen2[, value := as.numeric(value)]
@@ -202,6 +222,7 @@ n_reopenings = rowSums(matrix(days, ncol = length(school_r), nrow = length(days)
         matrix(school_r, ncol = length(school_r), nrow = length(days), byrow = TRUE));
 y_school = data.table(t = days, school = 1 - (n_closures - n_reopenings))
 y = merge(y, y_school, by = "t")
+print("[i]");
 y[, date := ymd("2020-01-01") + t]
 
 ggplot(y) + geom_line(aes(x = date, y = parks, colour = region_name, group = region_name))
