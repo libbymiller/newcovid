@@ -36,4 +36,4 @@ install.packages("aod")  	 # for cog_analysis.R
 
 install.packages("here") 	# for fit.R
 install.packages("sn") 		# for fit.R
-nstall.packages("binom")	# for fit.R
+install.packages("binom")	# for fit.R
