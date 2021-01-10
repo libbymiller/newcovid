@@ -64,16 +64,30 @@ R_MAX_VSIZE=100Gb
 ```
 (see https://stackoverflow.com/questions/51248293/error-vector-memory-exhausted-limit-reached-r-3-5-0-macos#52612848 )
 
+## Installation on Ubuntu (Buster)
+
+```
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install cmake gfortran libnlopt-cxx-dev libgsl0-dev git r-base r-base-dev
+cd newcovid/
+git clone https://github.com/libbymiller/newcovid.git
+sudo Rscript 0-install-packages.R
+mkdir output
+git checkout 51c0b8a17a9a24e115d8b cpp_funcs.R
+Rscript fit.R
+```
+
 ## Examples
 
 These can be found in the `examples` folder. This includes the following R files for version 1:
 
 * `examples/0-libraries.R` - Install required R libraries
-* `v1/examples/1-getting-started.R` - Compile code and run a basic simulation
-* `v1/examples/2-interventions.R` - Run intervention scenarios
-* `v1/examples/3-processes.R` - Set up an observation process (one way of calculating health burdens over time). 
-* `v1/examples/4-fitting.R` - Fitting model to data using MCMC. 
-* `v1/examples/5-observer.R` - Set up an observer to dynamically change parameters during a simulation. 
+* `examples/v1/1-getting-started.R` - Compile code and run a basic simulation
+* `examples/v1/2-interventions.R` - Run intervention scenarios
+* `examples/v1/3-processes.R` - Set up an observation process (one way of calculating health burdens over time). 
+* `examples/v1/4-fitting.R` - Fitting model to data using MCMC. 
+* `examples/v1/5-observer.R` - Set up an observer to dynamically change parameters during a simulation. 
 
 Model parameters are documented in `parameters_ref.txt`.
 
@@ -81,7 +95,7 @@ Model parameters are documented in `parameters_ref.txt`.
 For example:
 
 * `Rscript examples/0-libraries.R`
-* `Rscript v1/examples/1-getting-started.R`
+* `Rscript examples/v1/1-getting-started.R`
 
 
 For Version 2:

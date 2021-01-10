@@ -1,5 +1,10 @@
 # Installation guide
 
+There's much more detail in [README.md](README.md).
+This is not a full list of packages needed - I'm compiling one in [0-install-packages.R](../0-install-packages.R).
+
+--
+
 Install all packages required in the script.
 
 ```R
