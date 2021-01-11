@@ -70,8 +70,8 @@ R_MAX_VSIZE=100Gb
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install cmake gfortran libnlopt-cxx-dev libgsl0-dev git r-base r-base-dev
-cd newcovid/
 git clone https://github.com/libbymiller/newcovid.git
+cd newcovid/
 sudo Rscript 0-install-packages.R
 mkdir output
 git checkout 51c0b8a17a9a24e115d8b cpp_funcs.R
