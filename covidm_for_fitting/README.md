@@ -74,6 +74,7 @@ git clone https://github.com/libbymiller/newcovid.git
 cd newcovid/
 sudo Rscript 0-install-packages.R
 mkdir output
+mkdir fits
 git checkout 51c0b8a17a9a24e115d8b cpp_funcs.R
 Rscript fit.R
 ```
